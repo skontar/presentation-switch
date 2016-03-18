@@ -149,7 +149,7 @@ class Application():
 
         # Start
         if auto:
-            GLib.timeout_add_seconds(INTERVAL * 0.9 / CHECKS * 60, self.on_auto_interval)
+            GLib.timeout_add_seconds(INTERVAL / CHECKS * 60, self.on_auto_interval)
         else:
             self.on_manual_interval()
             GLib.timeout_add_seconds(1, self.on_manual_interval)
@@ -204,16 +204,22 @@ class Application():
             if self.counter > CHECKS:
                 self.counter = CHECKS
             message = triger_window.title + '\n' + ' | '.join(reasons) + ' => ' + str(self.counter)
-            print(message)
             tooltip += '\n' + message
+            print(message)
         else:
-            self.counter = 0
-        self.status_icon.set_tooltip_text(tooltip)
+            self.counter -= 1
+            if self.counter < 0:
+                self.counter = 0
+            else:
+                message = '=> ' + str(self.counter)
+                tooltip += '\n' + message
+                print(message)
 
-        if self.counter >= CHECKS:
+        if self.counter == CHECKS:
             GLib.idle_add(self.enable_presentation_auto)
-        else:
+        elif self.counter == 0:
             GLib.idle_add(self.disable_presentation_auto)
+        self.status_icon.set_tooltip_text(tooltip)
 
     def enable_presentation_auto(self):
         presentation_mode_set(True)
