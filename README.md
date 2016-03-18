@@ -1,4 +1,4 @@
-# XFCE Presentation Switch
+# XFCE Presentation Switcher
 
 Application used to control XFCE presentation mode in a more convenient way. It is meant to disable
 screensaver and all monitor energy saving utilities.
