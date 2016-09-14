@@ -58,7 +58,7 @@ It was tested on various Fedora 22 and Fedora 23 desktop systems, mostly XFCE sp
 
 ## Icons artwork
 
-Website: [IconArchive](http://www.iconarchive.com/show/soft-scraps-icons-by-hopstarter.html)
-Artist: [Hopstarter (Jojo Mendoza)](http://www.iconarchive.com/artist/hopstarter.html)
+Website: [IconArchive](http://www.iconarchive.com/show/soft-scraps-icons-by-hopstarter.html)  
+Artist: [Hopstarter (Jojo Mendoza)](http://www.iconarchive.com/artist/hopstarter.html)  
 License: [CC Attribution-Noncommercial-No Derivate 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)
 
