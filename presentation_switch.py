@@ -25,7 +25,7 @@ from threading import Thread
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Notify', '0.7')
-from gi.repository import GLib, Gtk, Notify  # @IgnorePep8
+from gi.repository import GLib, Gtk, Notify
 
 
 INTERVAL = 9  # The time interval in minutes in which are checks performed
@@ -54,7 +54,7 @@ Window = namedtuple('Window',
 
 def presentation_mode_toggle():
     """
-    Set xfce4 presentation mode to the opposit of actual state.
+    Set xfce4 presentation mode to the opposite of actual state.
     """
     call(COMMAND_SET + ' -T', shell=True)
 
@@ -80,7 +80,7 @@ def presentation_mode_state():
 
 def get_windows():
     """
-    Return all windows found by WM with CPU, fullsceen, process name, and class information.
+    Return all windows found by WM with CPU, fullscreen, process name, and class information.
     """
     # Basic window information
     result = check_output('nice -n 19 wmctrl -l -p', shell=True)
@@ -100,6 +100,7 @@ def get_windows():
         window_index[window_id] = (fullscreen, wm_classes)
 
     # Basic process information
+    usable_lines = []
     result = check_output('nice -n 19 top -b -n 2', shell=True)
     lines = [a for a in result.decode('utf8').split('\n') if a != '']
     first_found = False
@@ -123,7 +124,7 @@ def get_windows():
     return result
 
 
-class Application():
+class Application:
     def __init__(self, auto=False):
         self.worker_thread = None
         self.counter = 0
@@ -177,7 +178,7 @@ class Application():
     def worker(self):
         windows = get_windows()
 
-        triger_window = None
+        trigger_window = None
         reasons = []
         for window in windows:
             for condition in CONDITIONS:
@@ -196,14 +197,14 @@ class Application():
                         continue
                     else:
                         reasons.append('CPU = {}'.format(window.cpu))
-                triger_window = window
+                trigger_window = window
 
         tooltip = 'Interval {} minutes'.format(INTERVAL)
-        if triger_window:
+        if trigger_window:
             self.counter += 1
             if self.counter > CHECKS:
                 self.counter = CHECKS
-            message = triger_window.title + '\n' + ' | '.join(reasons) + ' => ' + str(self.counter)
+            message = trigger_window.title + '\n' + ' | '.join(reasons) + ' => ' + str(self.counter)
             tooltip += '\n' + message
             print(message)
         else:

@@ -12,21 +12,21 @@ to blue.
 
 ## Installation
 
-Prerequisities are `python3` and `python3-gobject` packages, which should be installed on Fedora by 
+Prerequisites are `python3` and `python3-gobject` packages, which should be installed on Fedora by
 default.
 
-Download the application directory and put it anywhere. Either add `presentations_switch.py --auto` 
+Download the application directory and put it anywhere. Either add `presentations_switch.py --auto`
 to your startup script or bind `presentations_switch.py` to a keyboard shortcut.
 
 
 ## Usage
 
-Run `presentations_switch.py` with or without `--auto` option. 
-    
+Run `presentations_switch.py` with or without `--auto` option.
+
     -h, --help  show this help message and exit
     -a, --auto  enable automatic mode (default: False)
 
-To change a way how the automatic mode behaves, you need to update a few constats in the Python 
+To change a way how the automatic mode behaves, you need to update a few constants in the Python
 code:
 
 	INTERVAL = 9  # The time interval in minutes in which are checks performed
@@ -41,12 +41,13 @@ code:
 	    dict(wm_class='Firefox', cpu=15.0),
 	)
 
-More lines act as logical or, more options act as logical and. Some examples of valid CONDITIONs would be:
+More lines act as logical or, more options act as logical and. Some examples of valid CONDITIONs
+would be:
 
 	CONDITIONS = (
 	    dict(wm_class='Firefox', fullscreen=True),  # Fullscreen Firefox window
-	    dict(wm_class='Vlc', cpu=15.0),             # VLC window using more than 15% CPU according 
-	    											# to `top` command
+	    dict(wm_class='Vlc', cpu=15.0),             # VLC window using more than 15% CPU according
+	                                                # to `top` command
 	)
 
 
@@ -57,7 +58,7 @@ It was tested on various Fedora 22 and Fedora 23 desktop systems, mostly XFCE sp
 
 ## Icons artwork
 
-Website: [IconArchive](http://www.iconarchive.com/show/soft-scraps-icons-by-hopstarter.html)    
-Artist: [Hopstarter (Jojo Mendoza)](http://www.iconarchive.com/artist/hopstarter.html)  
-License: [CC Attribution-Noncommercial-No Derivate 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)  
+Website: [IconArchive](http://www.iconarchive.com/show/soft-scraps-icons-by-hopstarter.html)
+Artist: [Hopstarter (Jojo Mendoza)](http://www.iconarchive.com/artist/hopstarter.html)
+License: [CC Attribution-Noncommercial-No Derivate 4.0](http://creativecommons.org/licenses/by-nc-nd/4.0/)
 
