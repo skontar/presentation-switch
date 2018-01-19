@@ -43,7 +43,7 @@ CONDITIONS = (
 COMMAND_SET = 'xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode'
 COMMAND_GET = 'nice -n 19 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode'
 
-WD = path.dirname(path.abspath(sys.argv[0]))  # Manage to run script anywhere in the path
+WD = path.dirname(path.realpath(__file__))  # Manage to run script anywhere in the path
 ICON_GREEN = path.join(WD, 'Hopstarter-Soft-Scraps-Button-Blank-Green.ico')
 ICON_GRAY = path.join(WD, 'Hopstarter-Soft-Scraps-Button-Blank-Gray.ico')
 ICON_BLUE = path.join(WD, 'Hopstarter-Soft-Scraps-Button-Blank-Blue.ico')
@@ -245,12 +245,12 @@ if __name__ == '__main__':
     else:
         presentation_mode_toggle()
         if presentation_mode_state():
-            notification = Notify.Notification.new('Presentation mode ON')
+            notification = Notify.Notification.new('Presentation mode ON', icon=ICON_GREEN)
             notification.set_timeout(500)
             notification.show()
             app = Application()
             Gtk.main()
         else:
-            notification = Notify.Notification.new('Presentation mode OFF')
+            notification = Notify.Notification.new('Presentation mode OFF', icon=ICON_GRAY)
             notification.set_timeout(500)
             notification.show()
