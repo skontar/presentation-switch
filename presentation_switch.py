@@ -19,7 +19,6 @@ from collections import namedtuple
 from os import path
 import re
 from subprocess import call, check_output
-import sys
 from threading import Thread
 
 import gi
@@ -40,8 +39,9 @@ CONDITIONS = (
     dict(wm_class='Firefox', cpu=15.0),
 )
 
-COMMAND_SET = 'xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode'
-COMMAND_GET = 'nice -n 19 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode'
+COMMAND_PRESENTATION = 'xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode'
+COMMAND_XAUTOLOCK = 'xautolock'
+COMMAND_NOTIFICATIONS_DND = 'xfconf-query -c xfce4-notifyd -p /do-not-disturb'
 
 WD = path.dirname(path.realpath(__file__))  # Manage to run script anywhere in the path
 ICON_GREEN = path.join(WD, 'Hopstarter-Soft-Scraps-Button-Blank-Green.ico')
@@ -52,30 +52,64 @@ Window = namedtuple('Window',
                     'window_id desktop_id pid client title cpu fullscreen name wm_classes')
 
 
-def presentation_mode_toggle():
+def xautolock_set(state):
     """
-    Set xfce4 presentation mode to the opposite of actual state.
+    Set xautolock to specific state.
     """
-    call(COMMAND_SET + ' -T', shell=True)
+    if state:
+        call(COMMAND_XAUTOLOCK + ' -enable', shell=True)
+    else:
+        call(COMMAND_XAUTOLOCK + ' -disable', shell=True)
 
 
 def presentation_mode_set(state):
     """
     Set xfce4 presentation mode to specific state.
     """
-    call(COMMAND_SET + ' -s {}'.format(str(state).lower()), shell=True)
+    call(COMMAND_PRESENTATION + ' -s {}'.format(str(state).lower()), shell=True)
+
+
+def notifications_dnd_set(state):
+    """
+    Set xfce4 notifications DND to specific state.
+    """
+    call(COMMAND_NOTIFICATIONS_DND + ' -s {}'.format(str(state).lower()), shell=True)
 
 
 def presentation_mode_state():
     """
     Read xfce4 presentation mode state.
     """
-    result = check_output(COMMAND_GET, shell=True)
+    result = check_output(COMMAND_PRESENTATION, shell=True)
     if b'false' in result:
         return False
     if b'true' in result:
         return True
     raise RuntimeError('Unknown state')
+
+
+def enable_presentation_all(auto):
+    """
+    Enables all functionality needed for true presentation mode.
+
+    When it is done from automatic mode, then notifications are not disabled.
+    """
+    xautolock_set(False)
+    if not auto:
+        notifications_dnd_set(True)
+    presentation_mode_set(True)
+
+
+def disable_presentation_all(auto):
+    """
+    Disables all functionality needed for true presentation mode.
+
+    When it is done from automatic mode, then notifications are not re-enabled.
+    """
+    xautolock_set(True)
+    if not auto:
+        notifications_dnd_set(False)
+    presentation_mode_set(False)
 
 
 def get_windows():
@@ -160,7 +194,7 @@ class Application:
         self.menu.popup(None, None, Gtk.StatusIcon.position_menu, sender, button, time)
 
     def on_close(self, widget, event):
-        presentation_mode_set(False)
+        disable_presentation_all(auto=False)
         if self.worker_thread is not None:
             self.worker_thread.join()
         Gtk.main_quit()
@@ -223,11 +257,11 @@ class Application:
         self.status_icon.set_tooltip_text(tooltip)
 
     def enable_presentation_auto(self):
-        presentation_mode_set(True)
+        enable_presentation_all(auto=True)
         self.status_icon.set_from_file(ICON_BLUE)
 
     def disable_presentation_auto(self):
-        presentation_mode_set(False)
+        disable_presentation_all(auto=True)
         self.status_icon.set_from_file(ICON_GRAY)
 
 
@@ -243,14 +277,20 @@ if __name__ == '__main__':
         app = Application(auto=True)
         Gtk.main()
     else:
-        presentation_mode_toggle()
         if presentation_mode_state():
-            notification = Notify.Notification.new('Presentation mode ON', icon=ICON_GREEN)
-            notification.set_timeout(500)
+            disable_presentation_all(auto=False)
+
+            notification = Notify.Notification.new('Presentation mode OFF', icon=ICON_GRAY)
+            notification.set_timeout(1000)
             notification.show()
+        else:
+            notification = Notify.Notification.new('Presentation mode ON', icon=ICON_GREEN)
+            notification.set_timeout(1000)
+            notification.show()
+
+            enable_presentation_all(auto=False)
+
             app = Application()
             Gtk.main()
-        else:
-            notification = Notify.Notification.new('Presentation mode OFF', icon=ICON_GRAY)
-            notification.set_timeout(500)
-            notification.show()
+
+    disable_presentation_all(auto=False)
